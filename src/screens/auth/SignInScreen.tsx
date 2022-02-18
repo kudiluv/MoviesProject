@@ -21,7 +21,6 @@ const SignInScreen = () => {
     );
     if (response) {
       setAccessToken?.(response.data.access_token);
-      console.log(response.data);
     }
   };
 

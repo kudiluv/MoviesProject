@@ -1,15 +1,12 @@
 import {View, Text, StyleSheet} from 'react-native';
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useEffect} from 'react';
 import ButtonRounded from '../../components/ButtonRounded';
 import MovieItem from '../../components/MovieItem';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {MoviesStackParamList} from '../../routing/MoviesNavigator';
 import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
-import {MovieDescription} from '../../types/movie/movie.description';
-import useMoviesApi from '../../api/movies/useMoviesApi';
-import useRequest from '../../api/useRequest';
-import {CastDto} from '../../api/movies/dto/cast.dto';
 import MovieItemSceleton from '../../components/MovieItemSceleton';
+import {useMovieInfoContext} from '../../store/movie.info.context';
 
 type MoviesListScreenNavigationProp = StackNavigationProp<
   MoviesStackParamList,
@@ -23,26 +20,9 @@ type MoviesListScreenRuteProp = RouteProp<
 const MovieDescriptionScreen = () => {
   const navigation = useNavigation<MoviesListScreenNavigationProp>();
   const {params} = useRoute<MoviesListScreenRuteProp>();
-  const [movie, setMovie] = useState<MovieDescription | {}>({});
-  const [cast, setCast] = useState<CastDto>([]);
-  const moviesApi = useMoviesApi();
-  const {sendRequest: sendRequestDescription, loading: loadingDescription} =
-    useRequest();
-  const {sendRequest: sendRequestCast, loading: loadingCast} = useRequest();
-  const getInfo = useCallback(() => {
-    sendRequestDescription(moviesApi.description(params.movieId)).then(res => {
-      if (res) {
-        setMovie(res.data);
-      }
-    });
-    sendRequestCast(moviesApi.cast(params.movieId)).then(res => {
-      if (res) {
-        setCast(res.data);
-      }
-    });
-  }, [moviesApi, params.movieId, sendRequestCast, sendRequestDescription]);
+  const {movie, cast, loading, getInfo} = useMovieInfoContext();
   useEffect(() => {
-    getInfo();
+    getInfo(params.movieId);
   }, []);
   const onNavigateComments = () => {
     navigation.navigate('MovieComments', {movieId: params.movieId});
@@ -50,7 +30,7 @@ const MovieDescriptionScreen = () => {
 
   return (
     <View>
-      {loadingDescription || loadingCast ? (
+      {loading ? (
         <MovieItemSceleton />
       ) : (
         <>

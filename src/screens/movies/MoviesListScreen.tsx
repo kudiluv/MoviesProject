@@ -1,5 +1,5 @@
 import {FlatList, StyleSheet, View} from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {MovieDescription} from '../../types/movie/movie.description';
 import MovieItem from '../../components/MovieItem';
 import useMoviesApi from '../../api/movies/useMoviesApi';
@@ -18,13 +18,13 @@ const MoviesListScreen = () => {
   const [movies, setMovies] = useState<MovieDescription[]>([]);
   const moviesApi = useMoviesApi();
   const {sendRequest, loading} = useRequest();
-  const loadData = () => {
+  const loadData = useCallback(() => {
     sendRequest(moviesApi.list()).then(res => {
       if (res) {
         setMovies(res.data);
       }
     });
-  };
+  }, []);
   useEffect(() => {
     loadData();
   }, []);
@@ -37,8 +37,8 @@ const MoviesListScreen = () => {
     <>
       {loading ? (
         <View style={styles.placeholderView}>
-          {[...Array(5)].map(() => (
-            <MovieItemSceleton marginVertical={15} />
+          {[...Array(5)].map((item, index) => (
+            <MovieItemSceleton marginVertical={15} key={index} />
           ))}
         </View>
       ) : (

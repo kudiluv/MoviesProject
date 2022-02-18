@@ -1,5 +1,5 @@
 import {FlatList, StyleSheet} from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import CommentItem from '../../components/CommentItem';
 import InputWithSender from '../../components/InputWithSender';
 import {RouteProp, useRoute} from '@react-navigation/native';
@@ -21,13 +21,13 @@ const MovieCommentsScreen = () => {
     useRequest();
   const {sendRequest: sendRequestNewMessage, loading: loadingNewMessage} =
     useRequest();
-  const loadData = () => {
+  const loadData = useCallback(() => {
     sendRequestMessages(moviesApi.comments(params.movieId)).then(res => {
       if (res) {
         setComments(res.data);
       }
     });
-  };
+  }, [moviesApi, params.movieId, sendRequestMessages]);
   useEffect(() => {
     loadData();
   }, []);

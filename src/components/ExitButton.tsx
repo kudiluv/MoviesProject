@@ -4,9 +4,9 @@ import {Button, ButtonProps} from 'react-native-elements';
 import {useUser} from '../store/user.context';
 
 const ExitButton = (props?: ButtonProps) => {
-  const {setAccessToken} = useUser();
+  const {clearAccessToken} = useUser();
   const logOut = () => {
-    setAccessToken?.('');
+    clearAccessToken?.();
   };
   return (
     <Button

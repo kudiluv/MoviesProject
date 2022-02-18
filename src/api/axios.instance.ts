@@ -1,9 +1,10 @@
 import axios from 'axios';
 import {API_URL} from '@env';
 import {useUser} from '../store/user.context';
+import {Alert} from 'react-native';
 
 const useAxiosInstance = () => {
-  const {accessToken, setAccessToken} = useUser();
+  const {accessToken, clearAccessToken} = useUser();
   const instance = axios.create({
     baseURL: API_URL,
     headers: {
@@ -14,7 +15,8 @@ const useAxiosInstance = () => {
   instance.interceptors.response.use(
     response => response,
     async error => {
-      setAccessToken?.('');
+      Alert.alert(error.response.data.errorMessage);
+      clearAccessToken?.();
       return Promise.reject(error);
     },
   );

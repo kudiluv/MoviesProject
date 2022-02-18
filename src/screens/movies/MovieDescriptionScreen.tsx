@@ -1,5 +1,5 @@
 import {View, Text, StyleSheet} from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import ButtonRounded from '../../components/ButtonRounded';
 import MovieItem from '../../components/MovieItem';
 import {StackNavigationProp} from '@react-navigation/stack';
@@ -29,8 +29,7 @@ const MovieDescriptionScreen = () => {
   const {sendRequest: sendRequestDescription, loading: loadingDescription} =
     useRequest();
   const {sendRequest: sendRequestCast, loading: loadingCast} = useRequest();
-
-  useEffect(() => {
+  const getInfo = useCallback(() => {
     sendRequestDescription(moviesApi.description(params.movieId)).then(res => {
       if (res) {
         setMovie(res.data);
@@ -41,6 +40,9 @@ const MovieDescriptionScreen = () => {
         setCast(res.data);
       }
     });
+  }, [moviesApi, params.movieId, sendRequestCast, sendRequestDescription]);
+  useEffect(() => {
+    getInfo();
   }, []);
   const onNavigateComments = () => {
     navigation.navigate('MovieComments', {movieId: params.movieId});
@@ -82,7 +84,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   containerCastComments: {
-    width: '80%',
-    marginLeft: 10,
+    paddingHorizontal: 10,
   },
 });

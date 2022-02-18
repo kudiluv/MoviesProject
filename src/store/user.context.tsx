@@ -1,9 +1,10 @@
 import AsyncStorage from '@react-native-community/async-storage';
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useCallback, useContext, useEffect, useState} from 'react';
 
 type UserContextType = {
   accessToken: string;
   setAccessToken?: (value: string) => void;
+  clearAccessToken?: () => void;
 };
 
 const initialState: UserContextType = {
@@ -31,8 +32,13 @@ export const UserContexProvider = ({children}: any) => {
       setSynced(true);
     });
   }, []);
+  const clearAccessToken = useCallback(() => {
+    setAccessToken('');
+    AsyncStorage.setItem('ACCESS_TOKEN', '');
+  }, []);
   return synced ? (
-    <UserContext.Provider value={{accessToken, setAccessToken}}>
+    <UserContext.Provider
+      value={{accessToken, setAccessToken, clearAccessToken}}>
       {children}
     </UserContext.Provider>
   ) : (
